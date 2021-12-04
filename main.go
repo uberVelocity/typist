@@ -10,6 +10,15 @@ import (
 	"time"
 )
 
+// inlineText outputs text inline as opposed to one after the other
+func inlineText(number int) {
+	words := readWords()
+	text := generateText(words, number)
+	for index := range text {
+		fmt.Printf("%s ", words[index])
+	}
+}
+
 func generateText(words []string, number int) []string {
 	var history []int
 	var selected []string
@@ -91,16 +100,25 @@ func gameLoop(text []string) ([]bool, time.Duration, float64, string) {
 }
 
 func main() {
-	fmt.Println("Select number of words: (ex: 10, 25, 50, 100)")
-	var input int
-	_, err := fmt.Scanln(&input)
-
+	fmt.Println("Burst (0) or Inline (1)")
+	var game int
+	_, err := fmt.Scanln(&game)
 	if err != nil {
 		log.Fatal(err)
 	}
+	fmt.Println("Select number of words: (ex: 10, 25, 50, 100)")
+	var input int
+	_, err = fmt.Scanln(&input)
+	if err != nil {
+		log.Fatal(err)
+	}
+	if game == 1 {
+		inlineText(input)
+	} else {
+		words := readWords()
+		text := generateText(words, input)
+		correctness, elapsed, fastestTime, fastestTimeWord := gameLoop(text)
+		showStats(correctness, text, elapsed, fastestTime, fastestTimeWord)
+	}
 
-	words := readWords()
-	text := generateText(words, input)
-	correctness, elapsed, fastestTime, fastestTimeWord := gameLoop(text)
-	showStats(correctness, text, elapsed, fastestTime, fastestTimeWord)
 }
